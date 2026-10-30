@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FNF Shorts</title>
+<meta name="description" content="Short clips from the FNF crew.">
+<meta property="og:title" content="FNF Shorts">
+<meta property="og:description" content="Short clips from the FNF crew.">
+<meta property="og:image" content="assets/mascots.png">
+<meta name="theme-color" content="#1B1B1F">
+<link rel="icon" href="assets/fnf.ico">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<header class="banner">
+  <div class="wrap banner-row">
+    <a class="logo" href="./"><img src="assets/logo.png" alt="FNF Shorts"></a>
+    <div class="record">
+      <span id="clip-count">&nbsp;</span>
+      <span class="tagline">Short clips from the arena</span>
+    </div>
+  </div>
+  <div class="wrap toolbar">
+    <div class="filter" id="tags" role="group" aria-label="Filter by tag"></div>
+    <div class="filter" role="group" aria-label="Order">
+      <button type="button" data-sort="new" class="on">Newest</button>
+      <button type="button" data-sort="old">Oldest</button>
+      <button type="button" data-sort="shuffle">Shuffle</button>
+    </div>
+    <input type="search" id="search" placeholder="Search clips" aria-label="Search clips">
+  </div>
+  <div class="wrap art" aria-hidden="true"><img src="assets/mascots.png" alt="" width="360"></div>
+</header>
+
+<main class="wrap">
+  <div class="grid" id="grid"></div>
+  <p class="empty" id="empty" hidden></p>
+</main>
+
+<div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="player-title" hidden>
+  <div class="player-backdrop" data-close></div>
+  <div class="player-box">
+    <div class="player-video">
+      <button type="button" class="nav prev" id="prev" aria-label="Previous clip">&#8249;</button>
+      <video id="video" controls playsinline preload="auto"></video>
+      <button type="button" class="nav next" id="next" aria-label="Next clip">&#8250;</button>
+    </div>
+    <div class="player-bar">
+      <div>
+        <h2 id="player-title"></h2>
+        <div class="dim" id="player-meta"></div>
+      </div>
+      <div class="player-actions">
+        <label class="toggle"><input type="checkbox" id="autonext"> Play next</label>
+        <button type="button" class="btn" id="copy">Copy link</button>
+        <a class="btn" id="download" download>Download</a>
+        <button type="button" class="btn" data-close aria-label="Close">&#10005;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="wrap">
+  Clips made in Google Flow · from the folks behind
+  <a href="https://github.com/Hooee71/FNFTracker">FNF Arena Tracker</a>
+</footer>
+<script src="site.js"></script>
+</body>
+</html>
