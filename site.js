@@ -119,6 +119,9 @@
     v.loop = true; v.playsInline = true; v.setAttribute("playsinline", "");
     v.preload = "auto"; v.src = c.src;
     v.addEventListener("playing", function () { v.classList.add("playing"); });
+    v.addEventListener("canplay", function () {   // retry once it's loaded, in case the first play() was refused
+      if (v.paused && v.isConnected) { var q = v.play(); if (q && q.catch) q.catch(function () { }); }
+    }, { once: true });
     thumb.appendChild(v);
     var p = v.play();
     if (p && p.catch) p.catch(function () { });
