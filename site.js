@@ -5,7 +5,6 @@
   var $ = function (id) { return document.getElementById(id); };
   var grid = $("grid"), empty = $("empty"), search = $("search"), tagBar = $("tags");
   var player = $("player"), video = $("video");
-  var hoverCapable = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
   var all = [], shown = [], current = -1;
   var state = { tag: "", sort: "new", q: "" };
@@ -99,29 +98,36 @@
 
   grid.addEventListener("click", function (e) {
     var card = e.target.closest(".card");
-    if (card) { e.preventDefault(); open(+card.getAttribute("data-i")); }
+    if (card) { e.preventDefault(); stopPreview(card); open(+card.getAttribute("data-i")); }
   });
 
-  // Hover preview: play the clip muted inside the card (desktop only).
-  if (hoverCapable) {
-    grid.addEventListener("mouseover", function (e) {
-      var card = e.target.closest(".card");
-      if (!card || card.contains(e.relatedTarget)) return;
-      var thumb = card.querySelector(".thumb"), c = shown[+card.getAttribute("data-i")];
-      if (!c || thumb.querySelector("video")) return;
-      var v = document.createElement("video");
-      v.muted = true; v.loop = true; v.playsInline = true; v.preload = "auto"; v.src = c.src;
-      v.addEventListener("playing", function () { v.classList.add("playing"); });
-      thumb.appendChild(v);
-      v.play().catch(function () { });
-    });
-    grid.addEventListener("mouseout", function (e) {
-      var card = e.target.closest(".card");
-      if (!card || card.contains(e.relatedTarget)) return;
-      var v = card.querySelector(".thumb video");
-      if (v) { v.pause(); v.removeAttribute("src"); v.load(); v.remove(); }
-    });
+  // Hover preview: play the clip muted inside the card. Decided per event (a real mouse or pen),
+  // not by the (hover: hover) media query, which some Windows setups report wrongly even with a mouse.
+  // Touch taps skip this and go straight to the player.
+  function stopPreview(card) {
+    var v = card.querySelector(".thumb video");
+    if (v) { v.pause(); v.removeAttribute("src"); v.load(); v.remove(); }
   }
+  grid.addEventListener("pointerover", function (e) {
+    if (e.pointerType === "touch") return;
+    var card = e.target.closest(".card");
+    if (!card || card.contains(e.relatedTarget)) return;
+    var thumb = card.querySelector(".thumb"), c = shown[+card.getAttribute("data-i")];
+    if (!c || thumb.querySelector("video")) return;
+    var v = document.createElement("video");
+    v.muted = true; v.defaultMuted = true; v.setAttribute("muted", "");
+    v.loop = true; v.playsInline = true; v.setAttribute("playsinline", "");
+    v.preload = "auto"; v.src = c.src;
+    v.addEventListener("playing", function () { v.classList.add("playing"); });
+    thumb.appendChild(v);
+    var p = v.play();
+    if (p && p.catch) p.catch(function () { });
+  });
+  grid.addEventListener("pointerout", function (e) {
+    var card = e.target.closest(".card");
+    if (!card || card.contains(e.relatedTarget)) return;
+    stopPreview(card);
+  });
 
   // ---------- player ----------
   var autonext = $("autonext");
