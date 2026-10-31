@@ -8,7 +8,7 @@ Every video in clips/ is published. clips.json is optional metadata (title, tags
 keyed by file name; clips without an entry get a title made from the file name.
 Needs ffmpeg + ffprobe on PATH (for posters, duration and size).
 """
-import argparse, json, re, shutil, subprocess, sys
+import argparse, hashlib, json, re, shutil, subprocess, sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -125,6 +125,14 @@ def main():
         if path.name not in meta:
             new_entries.append({"file": path.name, "title": clip["title"], "tags": [], "date": clip["date"]})
         print(f"  {path.name}: {width}x{height}, {duration}s")
+
+    # Cache-bust site.css/site.js: GitHub Pages lets browsers keep old copies for 10 minutes.
+    index = OUT / "index.html"
+    html = index.read_text(encoding="utf-8")
+    for name in ("site.css", "site.js"):
+        digest = hashlib.sha1((OUT / name).read_bytes()).hexdigest()[:10]
+        html = html.replace(f'"{name}"', f'"{name}?v={digest}"')
+    index.write_text(html, encoding="utf-8")
 
     (OUT / "clips.json").write_text(json.dumps({"clips": clips}, indent=1), encoding="utf-8")
     (OUT / ".nojekyll").write_text("")
